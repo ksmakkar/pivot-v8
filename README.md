@@ -1,33 +1,35 @@
-# PIVOT V8 — Autonomous Gemini Strategy Lab
+# PIVOT V10 — OpenAI Edition
 
-PIVOT V8 removes instructor controls. Students upload their team's case as Word (.docx) or text-based PDF (.pdf). Gemini extracts the case logic, generates four decision rounds and three options per round, evaluates team rationales, simulates business consequences, and awards rubric-based provisional marks after round four. The instructor role is read-only marks/report access.
+PIVOT V10 uses the OpenAI API for case analysis, simulation generation, decision feedback, and rubric-based grading. The student-facing workflow and clearer V9 interface are retained.
 
 ## Run locally
 ```bash
 pip install -r requirements.txt
-export GEMINI_API_KEY="your-key"
+export OPENAI_API_KEY="your-api-key"
+# Optional: export OPENAI_MODEL="gpt-4.1-mini"
 streamlit run app.py
 ```
 
-## Streamlit Community Cloud
-1. Upload `app.py`, `requirements.txt`, and `README.md` to the root of a GitHub repository.
-2. Deploy `app.py` on https://share.streamlit.io.
+## Deploy on Streamlit Community Cloud
+1. Upload `app.py`, `requirements.txt`, and `README.md` to the root of your GitHub repository.
+2. Deploy `app.py` at https://share.streamlit.io.
 3. In app Settings → Secrets, add:
-```toml
-GEMINI_API_KEY = "your-gemini-api-key"
-```
-4. Reboot the app. Do not commit API keys or database files.
+   ```toml
+   OPENAI_API_KEY = "your-openai-api-key"
+   OPENAI_MODEL = "gpt-4.1-mini"
+   ```
+4. Save and reboot the app. Never commit API keys or student data.
 
-## Flow
-1. A student representative uploads the case and starts the simulation.
-2. PIVOT extracts the text and Gemini generates four case-grounded rounds.
-3. The uploader receives a classroom code. Other teams join with that code.
-4. Each team completes four rounds independently; each decision is evaluated with case-grounded AI feedback and business-metric effects.
-5. After the fourth round, Gemini scores the team using the rubric (30% decision quality, 25% case evidence, 20% strategic coherence, 15% outcome management, 10% reflection). The read-only results page provides marks and CSV export.
+## Student flow
+1. Submit a student-prepared Word (`.docx`) or text-based PDF (`.pdf`) case.
+2. Create a team name and passcode, enter course/section and case title, and enter the marks-report password supplied by the course administrator.
+3. Save the generated class code.
+4. Teams join with the class code, team name, and passcode, then complete four decision rounds.
+5. OpenAI provides decision feedback and generates a rubric-based result after all four rounds.
 
 ## Important limitations
-- This is a prototype, not a validated grading system. Marks are provisional; provide human review/appeal for consequential grading.
-- Gemini outputs may be inaccurate or inconsistent. The app validates JSON shape but cannot guarantee pedagogical validity.
-- Scanned PDFs require OCR. Legacy `.doc` files must be converted to `.docx`.
-- Local SQLite is not suitable for reliable persistence across cloud restarts or concurrent classes. For real deployment, use managed PostgreSQL, access controls, backups, rate limits, and privacy review.
-- The API key is stored only in deployment secrets/environment; never put it in the repository.
+- Automated marks should be treated as provisional and validated before consequential grading.
+- Scanned PDFs need OCR; legacy `.doc` files need conversion to `.docx`.
+- Local SQLite may not persist reliably across cloud restarts or concurrent sessions.
+- API usage is billed separately from ChatGPT subscriptions. Keep API keys in Streamlit Secrets, not GitHub.
+- The OpenAI API key is read from the `OPENAI_API_KEY` environment variable or Streamlit Secrets.
