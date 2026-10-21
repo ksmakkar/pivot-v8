@@ -22,3 +22,8 @@ Verify the model is available to your Groq account. Never put the API key in Git
 
 ## Notes
 Python syntax compilation passed. This does not substitute for a live Groq integration test. Use sample cases first; local SQLite may not persist reliably on cloud restarts. Automated marks should be reviewed before official use.
+
+
+### V14 reliability fix
+
+Simulation generation now repairs rounds where the LLM returns fewer or more than three valid choices. If a choice is missing, PIVOT adds a clearly labelled fallback option rather than stopping the entire submission. Review fallback options before using the simulation for formal teaching.
