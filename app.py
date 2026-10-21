@@ -18,7 +18,7 @@ ROOT=Path(__file__).parent
 # Streamlit Community Cloud's local filesystem may reset across rebuilds/restarts.
 DB=Path(os.getenv('PIVOT_DB_PATH', str(ROOT/'pivot_v8.db'))).expanduser()
 MODEL=os.getenv('GROQ_MODEL','openai/gpt-oss-20b')
-st.set_page_config(page_title='PIVOT | Autonomous Strategy Lab',page_icon='◈',layout='wide')
+st.set_page_config(page_title='PIVOT | Business Arena',page_icon='◈',layout='wide', initial_sidebar_state='expanded')
 st.markdown('''<style>
 @import url('https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Manrope:wght@400;500;600;700;800&display=swap');
 :root{--forest:#163e32;--lime:#d8f5a6;--paper:#f7f8f5;--line:#dce4dd;--ink:#172820;--muted:#5b6b62;--field:#ffffff}
@@ -44,7 +44,13 @@ section[data-testid="stSidebar"] [data-testid="stCaptionContainer"] p{color:#d1e
 .stApp [data-testid="stForm"] h2,.stApp [data-testid="stForm"] h3{margin-top:.25rem}
 .stApp [data-testid="stDivider"]{border-color:#e4eae5!important}
 h1,h2,h3{color:#13251f;letter-spacing:-.035em}h1{font-weight:800;font-size:2.35rem!important}
-.hero{background:linear-gradient(120deg,#163e32,#205b47);color:#f7fbf5;border-radius:20px;padding:24px 28px;margin:.2rem 0 1.15rem}
+.hero{background:radial-gradient(circle at 92% 10%,rgba(216,245,166,.24),transparent 25%),linear-gradient(120deg,#102b26 0%,#163e32 48%,#2c6b50 100%);color:#f7fbf5;border-radius:22px;padding:28px 30px;margin:.2rem 0 1.25rem;box-shadow:0 14px 35px rgba(22,62,50,.12);position:relative;overflow:hidden}
+.hero:after{content:'◈';position:absolute;right:24px;bottom:-42px;font-size:160px;line-height:1;color:rgba(216,245,166,.12);pointer-events:none}
+.pill-row{display:flex;flex-wrap:wrap;gap:8px;margin:14px 0 4px}.pill{display:inline-block;border:1px solid rgba(255,255,255,.24);background:rgba(255,255,255,.09);color:#f4faef;border-radius:999px;padding:6px 11px;font-size:12px;font-weight:700}
+.feature-card{background:linear-gradient(145deg,#fff,#f4f8f3);border:1px solid #dce7dd;border-radius:18px;padding:18px;height:100%;box-shadow:0 5px 18px rgba(26,53,39,.035)}.feature-icon{font-size:25px;margin-bottom:10px}.feature-title{font-size:16px;font-weight:800;color:#173a2c;margin-bottom:6px}.feature-copy{font-size:13px;line-height:1.55;color:#5b6b62}
+.section-kicker{font-family:'DM Mono',monospace;color:#5b8069;text-transform:uppercase;font-size:11px;letter-spacing:.13em;font-weight:700}
+[data-testid='stProgressBar']>div>div{background:linear-gradient(90deg,#163e32,#b6e879)!important;border-radius:99px}
+.stApp [data-baseweb='tab-list']{background:#eaf0e9;border-radius:12px;padding:5px}.stApp [data-baseweb='tab']{border-radius:9px;padding:8px 14px}
 .hero h2{color:#f7fbf5;margin:7px 0}.hero p{color:#d7e8dd;margin:0;line-height:1.6}
 .eyebrow{color:#507c5e;font-family:'DM Mono',monospace;font-size:11px;letter-spacing:.14em;text-transform:uppercase;font-weight:500}
 .panel,.step-card{background:#fff;border:1px solid var(--line);border-radius:14px;padding:16px 18px;margin:.35rem 0 1rem;color:#203b30}
@@ -353,13 +359,52 @@ def company_standings(code):
 
 init()
 st.sidebar.markdown('<div style="font-family:monospace;letter-spacing:.2em;color:#d8f5a6">◈ P I V O T</div>',unsafe_allow_html=True)
-st.sidebar.caption('Strategy Lab · Phase 3 Company Wars')
-mode=st.sidebar.radio('CHOOSE WHAT TO DO',['Submit a case','Play simulation','Company Wars','Dynamic Market','Final marks'],format_func=lambda x:{'Submit a case':'1 · Submit a case','Play simulation':'2 · Play simulation','Company Wars':'3 · Company Wars','Dynamic Market':'4 · Dynamic Market','Final marks':'5 · View final marks'}[x])
+st.sidebar.caption('BUSINESS PLAYGROUND · PHASE 4')
+mode=st.sidebar.radio('YOUR WORKSPACE',['Student Hub','Submit a case','Play simulation','Company Wars','Dynamic Market','Final marks'],format_func=lambda x:{'Student Hub':'✦  Explore PIVOT','Submit a case':'＋  Create a simulation','Play simulation':'▶  Play a case','Company Wars':'🏆  Company Wars','Dynamic Market':'↗  Dynamic Market','Final marks':'▤  Final marks'}[x])
+if st.session_state.get('hub_nav'):
+ mode=st.session_state.pop('hub_nav')
 st.sidebar.markdown('---')
-st.sidebar.caption('Phase 4 adds a deterministic, shared competitive market with pricing, marketing, capacity, quality and people-investment decisions. Academic marks remain separate from market scores.')
-st.markdown('<div class="eyebrow">PIVOT / AUTONOMOUS STRATEGY LAB</div>',unsafe_allow_html=True)
+st.sidebar.caption('Build strategy. Test decisions. Learn from consequences. Academic marks remain separate from game scores.')
+st.markdown('<div class="eyebrow">◈ PIVOT / BUSINESS ARENA</div>',unsafe_allow_html=True)
 st.title('Make the call. Own the outcome.')
-st.markdown('PIVOT turns a business case into a decision arena: competing executive perspectives, changing business conditions, visible performance metrics, and a skill profile built from your decisions.')
+st.markdown('A hands-on business playground for turning management theory into decisions, trade-offs and results.')
+
+if mode=='Student Hub':
+ hero('YOUR BUSINESS PLAYGROUND','Think like a manager. Play like a strategist.','Explore a business challenge, build decision confidence, and then jump into a case or competitive market.')
+ st.markdown('<div class="pill-row"><span class="pill">✦ Case missions</span><span class="pill">↗ Market strategy</span><span class="pill">◉ Performance insights</span><span class="pill">♟ Team competition</span></div>',unsafe_allow_html=True)
+ st.write('')
+ cards=st.columns(3)
+ with cards[0]: st.markdown('<div class="feature-card"><div class="feature-icon">🧭</div><div class="feature-title">Case Arena</div><div class="feature-copy">Turn an assigned case into sequential decisions with stakeholder trade-offs and feedback.</div></div>',unsafe_allow_html=True)
+ with cards[1]: st.markdown('<div class="feature-card"><div class="feature-icon">📈</div><div class="feature-title">Dynamic Market</div><div class="feature-copy">Choose price, marketing, capacity, quality and people investment against rival teams.</div></div>',unsafe_allow_html=True)
+ with cards[2]: st.markdown('<div class="feature-card"><div class="feature-icon">🏆</div><div class="feature-title">Company Wars</div><div class="feature-copy">Compare company performance and see how strategic choices shape outcomes.</div></div>',unsafe_allow_html=True)
+ st.markdown('### Quick challenge')
+ st.caption('A two-minute practice round. This practice is independent of graded simulations and does not affect team results.')
+ with st.container(border=True):
+  st.markdown('**Your company has strong demand but a tight cash position. What do you do first?**')
+  practice=st.radio('Choose your first move',['Cut prices to grow sales volume','Protect cash and test a targeted offer','Increase production capacity immediately'],index=None,key='hub_practice')
+  if st.button('Reveal strategy insight',type='primary',key='hub_reveal'):
+   if not practice: st.warning('Choose an option first to reveal the insight.')
+   elif practice=='Protect cash and test a targeted offer':
+    st.success('Strong risk-adjusted choice. A targeted test protects liquidity while producing evidence about demand. Track contribution margin, conversion and repeat purchase before scaling.')
+   elif practice=='Cut prices to grow sales volume':
+    st.info('Possible upside: faster volume growth. Key risk: lower margin and a price war. Calculate contribution per unit and estimate whether the extra volume offsets the discount.')
+   else:
+    st.info('Possible upside: fewer stockouts. Key risk: cash tied up in capacity and inventory before demand is proven. Check utilisation, lead times and available cash first.')
+ st.markdown('### Your next move')
+ a,b,c=st.columns(3)
+ with a:
+  if st.button('＋ Create a case simulation',use_container_width=True): st.session_state['hub_nav']='Submit a case';st.rerun()
+ with b:
+  if st.button('▶ Play a case',use_container_width=True): st.session_state['hub_nav']='Play simulation';st.rerun()
+ with c:
+  if st.button('↗ Enter Dynamic Market',use_container_width=True): st.session_state['hub_nav']='Dynamic Market';st.rerun()
+ st.markdown('### Business terms, without the jargon')
+ terms=[('Contribution margin','Selling price minus variable cost per unit. It helps show whether additional sales create value.'),('Market share','Your share of total category sales in the market and period being measured.'),('Capacity utilisation','Units produced or sold relative to available capacity. High utilisation can improve efficiency but reduce flexibility.'),('Working capital','Short-term resources used to fund day-to-day operations.'),('Price elasticity','How strongly demand responds when price changes.'),('Customer acquisition cost','Marketing and sales cost required to acquire a customer.')]
+ for i in range(0,len(terms),2):
+  x,y=st.columns(2)
+  for col,(term,desc) in zip((x,y),terms[i:i+2]):
+   with col:
+    with st.expander(term): st.write(desc)
 
 if mode=='Submit a case':
  hero('STEP 1 OF 3 · STUDENT WORKSPACE','Launch a Business Arena','Complete the short form below. Groq reads your case and creates four sequential missions with distinct choices, stakeholder trade-offs, and measurable business consequences.')
@@ -559,7 +604,8 @@ elif mode=='Dynamic Market':
    st.info('Company Wars needs at least two registered teams. Ask other teams to create/join this case before starting the market.')
   else:
    st.markdown(f"## {case['title']} · {len(teams)} competing companies")
-   a,b,c=st.columns(3);a.metric('Registered companies',len(teams));b.metric('Market rounds',MARKET_ROUNDS);c.metric('Total demand baseline','10,000 units')
+   a,b,c=st.columns(3);a.metric('🏢 Companies',len(teams));b.metric('⏱ Market rounds',MARKET_ROUNDS);c.metric('🌍 Demand baseline','10,000 units')
+   st.progress(min(1.0, len(rows('SELECT * FROM market_rounds WHERE code=?',(code,)))/MARKET_ROUNDS),text='Season progress')
    st.caption('Teaching-model assumptions: all teams submit before settlement; market demand is shared proportionally by attractiveness and then limited by each firm’s capacity. Currency is an abstract unit, not a real-world forecast.')
    with st.form('market_team_login'):
     tname=st.selectbox('Select your registered team',[t['name'] for t in teams])
@@ -640,16 +686,46 @@ elif mode=='Dynamic Market':
        if res:
         x,y,z=st.columns(3);x.metric('Units sold',f"{res['units_sold']:,}");y.metric('Revenue',f"{res['revenue']:,.0f}");z.metric('Profit / loss',f"{res['profit']:,.0f}")
         st.write(f"Market share: **{res['market_share']:.2f}%** · Customer satisfaction: **{res['satisfaction']:.1f}/100** · Capacity utilization: **{res['capacity_utilization']:.1f}%**")
+     history=[]
+     for sr in settled:
+      data=json.loads(sr['state_json']);res=data.get('results',{}).get(tname,{})
+      if res: history.append({'Round':f"R{sr['round_no']+1}",'Revenue':res.get('revenue',0),'Profit / loss':res.get('profit',0),'Market share %':res.get('market_share',0),'Units sold':res.get('units_sold',0)})
+     if history:
+      st.markdown('#### 📊 Your performance over time')
+      hist_df=pd.DataFrame(history)
+      t1,t2,t3=st.tabs(['Profit & revenue','Market share','Units sold'])
+      with t1:
+       f=px.line(hist_df,x='Round',y=['Revenue','Profit / loss'],markers=True,title='Financial trajectory')
+       f.update_layout(margin=dict(l=5,r=5,t=42,b=5),height=300,paper_bgcolor='rgba(0,0,0,0)',plot_bgcolor='rgba(0,0,0,0)',font_color='#203b30')
+       st.plotly_chart(f,use_container_width=True)
+      with t2:
+       f=px.area(hist_df,x='Round',y='Market share %',markers=True,title='Market share trajectory')
+       f.update_layout(margin=dict(l=5,r=5,t=42,b=5),height=270,paper_bgcolor='rgba(0,0,0,0)',plot_bgcolor='rgba(0,0,0,0)',font_color='#203b30')
+       st.plotly_chart(f,use_container_width=True)
+      with t3:
+       f=px.bar(hist_df,x='Round',y='Units sold',title='Units sold by round')
+       f.update_layout(margin=dict(l=5,r=5,t=42,b=5),height=270,paper_bgcolor='rgba(0,0,0,0)',plot_bgcolor='rgba(0,0,0,0)',font_color='#203b30')
+       st.plotly_chart(f,use_container_width=True)
     # Standings use the last settled state only; unsubmitted/unfinished rounds never affect ranks.
     latest_states=states
     if settled:
-     st.markdown('### Company standings')
+     st.markdown('### 🏆 Company standings')
      board=[]
      for tt in teams:
       ss=latest_states.get(tt['name'],initial_company(tt['name']))
       board.append({'Company':tt['name'],'Market score':company_score(ss),'Cumulative profit':ss.get('cumulative_profit',0),'Cash':ss.get('cash',0),'Market share %':ss.get('market_share',0),'Customer satisfaction':ss.get('satisfaction',65),'Quality':ss.get('quality',65),'Brand':ss.get('brand',50)})
      board.sort(key=lambda x:(x['Market score'],x['Cumulative profit']),reverse=True)
-     st.dataframe(pd.DataFrame([{'Rank':i+1,**b} for i,b in enumerate(board)]).round(2),use_container_width=True,hide_index=True)
+     board_df=pd.DataFrame([{'Rank':i+1,**b} for i,b in enumerate(board)]).round(2)
+     left,right=st.columns([1.2,1])
+     with left:
+      st.dataframe(board_df,use_container_width=True,hide_index=True)
+     with right:
+      st.markdown('#### Market snapshot')
+      chart_df=pd.DataFrame(board)
+      if not chart_df.empty:
+       fig=px.bar(chart_df.sort_values('Market share %',ascending=True),x='Market share %',y='Company',orientation='h',color='Market share %',color_continuous_scale=['#dcebd8','#163e32'],title='Market share by company')
+       fig.update_layout(margin=dict(l=4,r=4,t=42,b=4),height=300,coloraxis_showscale=False,paper_bgcolor='rgba(0,0,0,0)',plot_bgcolor='rgba(0,0,0,0)',font_color='#203b30')
+       st.plotly_chart(fig,use_container_width=True)
      st.caption('Market score is an educational game score, not an academic mark. A team’s decisions are locked per round. Results persist in the configured application database; cloud-local SQLite may still be lost on restarts unless PIVOT_DB_PATH points to durable storage.')
 
 
