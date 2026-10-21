@@ -20,10 +20,15 @@ st.markdown('''<style>
 :root{--forest:#163e32;--lime:#d8f5a6;--paper:#f5f7f2;--line:#dce5dd}
 html,body,[class*="css"]{font-family:Manrope,sans-serif}.stApp{background:var(--paper);color:#13251f}
 section[data-testid="stSidebar"]{background:var(--forest)} section[data-testid="stSidebar"] *{color:#f3f8f1}
+/* Explicit contrast for Streamlit form labels and helper text */
+.stApp label, .stApp [data-testid="stWidgetLabel"], .stApp [data-testid="stWidgetLabel"] p{color:#203b30!important;font-weight:700!important}
+.stApp [data-testid="stCaptionContainer"] p{color:#52665b!important}
+.stApp input, .stApp textarea{color:#172820!important}
+.stApp [data-baseweb="select"] *{color:#172820!important}
 h1,h2,h3{color:#13251f;letter-spacing:-.04em}h1{font-weight:800;font-size:2.5rem!important}
 .hero{background:linear-gradient(120deg,#163e32,#205b47);color:#f7fbf5;border-radius:22px;padding:25px 29px;margin:.2rem 0 1.2rem}
 .hero h2{color:#f7fbf5;margin:7px 0}.hero p{color:#d7e8dd;margin:0}.eyebrow{color:#507c5e;font-family:'DM Mono',monospace;font-size:11px;letter-spacing:.16em;text-transform:uppercase;font-weight:500}
-.panel{background:white;border:1px solid var(--line);border-radius:15px;padding:17px 19px}.stButton>button{border-radius:10px!important;font-weight:700!important;min-height:2.5rem}.stButton>button[kind="primary"]{background:#163e32!important;color:white!important;border:1px solid #163e32!important}
+.panel{background:white;border:1px solid var(--line);border-radius:15px;padding:17px 19px}.step-card{background:#fff;border:1px solid var(--line);border-radius:14px;padding:14px 16px;margin:.3rem 0 1rem}.stButton>button{border-radius:10px!important;font-weight:700!important;min-height:2.5rem}.stButton>button[kind="primary"]{background:#163e32!important;color:white!important;border:1px solid #163e32!important}
 [data-testid="stMetric"]{background:white;border:1px solid #dce5dd;border-radius:12px;padding:12px}
 </style>''',unsafe_allow_html=True)
 
@@ -149,51 +154,74 @@ def progress_metrics(ds):
 init()
 st.sidebar.markdown('<div style="font-family:monospace;letter-spacing:.2em;color:#d8f5a6">◈ P I V O T</div>',unsafe_allow_html=True)
 st.sidebar.caption('Autonomous Strategy Lab · V8')
-mode=st.sidebar.radio('WORKSPACE',['Submit a case','Play simulation','Final marks'])
+mode=st.sidebar.radio('CHOOSE WHAT TO DO',['Submit a case','Play simulation','Final marks'],format_func=lambda x:{'Submit a case':'1 · Submit a case','Play simulation':'2 · Play simulation','Final marks':'3 · View final marks'}[x])
 st.sidebar.markdown('---')
 st.sidebar.caption('Case analysis, simulation design, decision feedback and rubric-based marking are automated with Gemini. No instructor controls are provided.')
 st.markdown('<div class="eyebrow">PIVOT / AUTONOMOUS STRATEGY LAB</div>',unsafe_allow_html=True)
 st.title('Decisions have consequences.')
-st.markdown('Student-prepared cases become interactive simulations. Teams make decisions; Gemini evaluates reasoning and generates rubric-based marks.')
+st.markdown('Upload a student-prepared case, make decisions as a team, and receive a rubric-based result. Gemini automates case analysis, simulation design, feedback, and marking.')
 
 if mode=='Submit a case':
- hero('STUDENT WORKSPACE','Upload your team’s case','PIVOT reads the Word/PDF case, creates the simulation, and launches a classroom automatically.')
- st.info('Accepted: .docx and text-based .pdf. Scanned PDFs need OCR first. Do not upload confidential, personal, or copyrighted material unless you have permission.')
+ hero('STEP 1 OF 3 · STUDENT WORKSPACE','Create a simulation from your case','Complete the short form below. Gemini will read the case and automatically create four decision rounds.')
+ st.markdown('<div class="step-card"><b>Before you start</b><br>Have your case file ready as a Word <b>.docx</b> or text-based PDF <b>.pdf</b>. You will need a team name, a team passcode, and the marks-report password provided by your instructor. Scanned PDFs may not work unless OCR has been applied.</div>',unsafe_allow_html=True)
  with st.form('upload_case',clear_on_submit=False):
+  st.subheader('1. Your team')
   a,b=st.columns(2)
-  with a: student=st.text_input('Submitting student / team representative');team=st.text_input('Team name',placeholder='e.g., Team Northstar');team_pw=st.text_input('Team passcode',type='password',help='Use this to return to your team workspace.')
-  with b:course=st.text_input('Course / section');title=st.text_input('Case title');grade_password=st.text_input('Instructor results password',type='password',help='Enter the results password supplied by the instructor. It is used only to protect final marks.')
-  up=st.file_uploader('Student-prepared case file',type=['docx','pdf'])
-  go=st.form_submit_button('Analyse case and launch simulation',type='primary')
+  with a:
+   student=st.text_input('Your name',placeholder='Name of submitting student',help='Enter the student who is submitting the case for the team.')
+   team=st.text_input('Team name',placeholder='e.g., Team Northstar',help='Use the same team name when returning to this simulation.')
+  with b:
+   course=st.text_input('Course / section',placeholder='e.g., MBA Marketing · Section A',help='Helps identify your class in the results report.')
+   team_pw=st.text_input('Create a team passcode',type='password',placeholder='At least 4 characters',help='Your team uses this to sign in later. Share it only with your teammates.')
+  st.divider()
+  st.subheader('2. Case details')
+  title=st.text_input('Case title',placeholder='e.g., Northstar: Supply Chain Under Pressure',help='Use the title shown on your assigned case.')
+  up=st.file_uploader('Upload your case file',type=['docx','pdf'],help='Accepted formats: Word .docx and text-based PDF .pdf. Maximum size follows the app hosting limit.')
+  st.divider()
+  st.subheader('3. Marks report access')
+  grade_password=st.text_input('Instructor-provided marks-report password',type='password',placeholder='Enter the password supplied by your instructor',help='This protects the class marks report. Do not make up a password; ask your instructor for it.')
+  st.caption('Privacy reminder: upload only material you are permitted to share. Do not include confidential personal information.')
+  go=st.form_submit_button('Create my simulation →',type='primary',use_container_width=True)
  if go:
-  if not all(x.strip() for x in [student,team,team_pw,course,title,grade_password]) or not up:st.error('Complete all fields, including the instructor results password, and upload a case file.')
-  elif len(team_pw)<4:st.error('Team passcode must contain at least four characters.')
+  missing=[]
+  if not student.strip():missing.append('your name')
+  if not team.strip():missing.append('team name')
+  if not course.strip():missing.append('course / section')
+  if not title.strip():missing.append('case title')
+  if not team_pw.strip():missing.append('team passcode')
+  if not grade_password.strip():missing.append('instructor-provided marks-report password')
+  if not up:missing.append('case file')
+  if missing:st.error('Please complete: '+', '.join(missing)+'.')
+  elif len(team_pw)<4:st.error('Your team passcode must be at least 4 characters.')
   else:
    try:
-    with st.spinner('Gemini is extracting the case logic and designing four decision rounds…'):
+    with st.spinner('Step 1/2: Reading your case… then Step 2/2: Gemini is building the simulation. This may take a minute.'):
      txt=extract(up)
-     if len(txt.strip())<250:raise ValueError('Too little text was extracted. For scanned PDFs, run OCR or upload a Word document.')
+     if len(txt.strip())<250:raise ValueError('We could not extract enough text. Upload a text-based PDF or a Word .docx file. Scanned PDFs need OCR first.')
      sim=build_sim(title.strip(),txt)
      code=create_case(title.strip(),sim.get('company','Case organization'),txt,sim,student.strip(),course.strip(),grade_password)
      c=db();c.execute('INSERT INTO teams(code,name,pass_hash,created) VALUES(?,?,?,?)',(code,team.strip(),H(team_pw),datetime.now().isoformat(timespec='seconds')));c.commit();c.close()
      created_team=get_team(code,team.strip())
      st.session_state['created_code']=code;st.session_state['created_team']=team.strip();st.session_state['play_code']=code;st.session_state['play_team']=created_team['id'];st.session_state['play_name']=team.strip()
-    st.success('Simulation created automatically.')
-   except Exception as e:st.error(f'Could not create simulation: {e}')
+    st.success('Your simulation is ready!')
+   except Exception as e:st.error(f'Could not create the simulation: {e}')
  if st.session_state.get('created_code'):
   code=st.session_state['created_code'];case=get_case(code)
-  st.markdown('### Your classroom is ready')
-  st.code(f'CLASS CODE: {code}')
-  st.write(f"**Case:** {case['title']} · **Team:** {st.session_state.get('created_team','')}")
-  st.warning('Save the class code. Share it with other teams. Your own team can continue in Play simulation using the passcode you set during upload.')
-  st.markdown('### AI-generated simulation overview')
-  for i,r in enumerate(case['sim']['rounds'],1):
-   with st.expander(f"Round {i}: {r['title']}"):
-    st.write(r['event']);st.markdown(f"**Decision:** {r['prompt']}")
-    for ch in r['choices']:st.markdown(f"- **{ch['label']}** — {ch['description']} *(Trade-off: {ch['tradeoff']})*")
+  st.markdown('### Your simulation is ready')
+  st.success('Save these details. You will need the class code and team passcode to return.')
+  a,b=st.columns(2)
+  with a:st.metric('Class code',code)
+  with b:st.metric('Your team',st.session_state.get('created_team',''))
+  st.info('Other teams can select “Play simulation” and use this class code to join. Each team should use a unique team name and its own passcode.')
+  st.markdown('### What happens next?')
+  st.markdown('\n'.join(['1. Open **Play simulation** in the left menu.','2. Sign in using your class code, team name, and passcode.','3. Complete four decision rounds.','4. Your final rubric-based mark is generated automatically.']))
+  with st.expander('Preview the four decision rounds'):
+   for i,r in enumerate(case['sim']['rounds'],1):
+    st.markdown(f"**Round {i}: {r['title']}**")
+    st.write(r['event']);st.markdown(f"**Your decision:** {r['prompt']}")
 
 elif mode=='Play simulation':
- hero('TEAM WORKSPACE','Join your case simulation','Enter the classroom code, then submit one decision per round. Rounds unlock automatically for each team.')
+ hero('STEP 2 OF 3 · TEAM WORKSPACE','Join your simulation','Enter the class code from the submission confirmation. Use the exact team name and passcode your team created.')
  with st.form('team_login'):
   a,b=st.columns(2)
   with a:code=st.text_input('Class code').strip().upper();name=st.text_input('Team name')
@@ -256,7 +284,7 @@ elif mode=='Play simulation':
    if not chart.empty:st.plotly_chart(px.line(chart,x='Round',y=['cash','service','trust','morale','risk'],markers=True,title='Business health over time'),use_container_width=True)
 
 else:
- hero('READ-ONLY RESULTS','Automated marks','Read-only instructor report: final marks are protected by the results password supplied for this case. No instructor controls or manual case configuration are available.')
+ hero('STEP 3 OF 3 · RESULTS','View final marks','Enter the class code and the instructor-provided marks-report password to view completed team results and download the marks CSV.')
  a,b=st.columns(2)
  with a:code=st.text_input('Class code').strip().upper()
  with b:grade_password=st.text_input('Instructor results password',type='password')
